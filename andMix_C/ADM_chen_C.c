@@ -10,7 +10,11 @@
 
 
 #include "NR_chen.h"
-
+#include <stdio.h>
+#include <math.h>
+#include "nr.h"
+#include "nrutil.h"
+#include <stdlib.h>
 
 double **
 Matcreate (int r, int c) // The elements in the rows are next to each other.
