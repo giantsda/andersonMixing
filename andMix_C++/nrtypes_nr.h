@@ -3,7 +3,7 @@
 
 #include <complex>
 #include <fstream>
-#include "nrutil.h"
+#include "nrutil_nr.h"
 using namespace std;
 
 typedef double DP;

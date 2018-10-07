@@ -26,7 +26,7 @@ adm_chen (void
   int nm = min (30, n);
   int k_restart = 0; // k_restart is used when U is ill.
   double err = 9.9e99; // err
-  vector<vector<double>> X (maxIteration), Y (maxIteration); /* X is used to store the guessed solution and
+  vector<vector<double> > X (maxIteration), Y (maxIteration); /* X is used to store the guessed solution and
    Y is the resulted rhs*/
   for (int i = 0; i < maxIteration; i++)
     {
@@ -103,26 +103,3 @@ adm_chen (void
   return 1;
 }
 
-void
-myfun (vector<double>& in, vector<double>& out)
-{
-  out[0] = in[0] * in[1] * in[2] - 12.;
-  out[1] = in[1] * in[1] + in[0] * in[0] - 8.;
-  out[2] = in[1] + in[0] + in[2] - 5.;
-}
-
-int
-main ()
-{
-  vector<double> x;
-  x.push_back (1.);
-  x.push_back (2.);
-  x.push_back (3.);
-  int fail = adm_chen (&myfun, x, 1e-15, 3000);
-
-  if (~fail)
-    for (auto s : x)
-      cout << s << endl;
-
-  return 0;
-}

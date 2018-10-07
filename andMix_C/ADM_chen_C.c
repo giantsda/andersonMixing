@@ -8,20 +8,9 @@
  ============================================================================
  */
 
-#include <stdio.h>
-#include <math.h>
-#include "nr.h"
-#include "nrutil.h"
-#include <stdlib.h>
 
-struct parameterDumper
-{
-  char name[50];
-  int int_a, int_b;
-  double double_a, double_b;
-  int *Va, *Vb;
-  double* Vc, Vd;
-};
+#include "NR_chen.h"
+
 
 double **
 Matcreate (int r, int c) // The elements in the rows are next to each other.
@@ -153,25 +142,4 @@ adm_chen (void
   return 1;
 }
 
-void
-myfun (double* in, double* out, int n, struct parameterDumper* p)
-{
-  out[0] = in[0] * in[1] * in[2] - 12.;
-  out[1] = in[1] * in[1] + in[0] * in[0] - 8.;
-  out[2] = in[1] + in[0] + in[2] - 511.;
 
-}
-
-int
-main ()
-{
-  double x[] =
-    { 1, 2, 3 };
-
-  struct parameterDumper p;
-  p.double_a = 2.5;
-  p.double_b = 3.6;
-  int fail = adm_chen (&myfun, x, 1e-15, 3000, 3, &p);
-
-  return 0;
-}
