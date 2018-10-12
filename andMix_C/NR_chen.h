@@ -9,9 +9,7 @@
 #define NR_CHEN_H_
 
 #include <stdio.h>
-#include <math.h>
-#include "nr.h"
-#include "nrutil.h"
+
 #include <stdlib.h>
 
 struct parameterDumper
@@ -23,10 +21,21 @@ struct parameterDumper
   char* s1, *s2, *s3, *s4, *s5;
 };
 
+double **
+Matcreate (int r, int c); // The elements in the rows are next to each other.
+
+void
+Matfree (double** A);
+
 int
 adm_chen (void
-(*f) (double*, double*, int, struct parameterDumper*),
-	  double* x_old, double tol, int maxIteration, int n,
-	  struct parameterDumper* p);
+(*f) (int, double* in, double* out),
+	  double* x_old, double tol, int maxIteration, int n, double lmd,
+	  int nn);
+
+void
+spline_chen (double* x, double* y, double* xp, double* yp, int Nx, int Nxp,
+	     double* m);
 
 #endif /* NR_CHEN_H_ */
+

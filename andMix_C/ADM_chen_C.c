@@ -8,7 +8,6 @@
  ============================================================================
  */
 
-
 #include "NR_chen.h"
 #include <stdio.h>
 #include <math.h>
@@ -16,68 +15,61 @@
 #include "nrutil.h"
 #include <stdlib.h>
 
-double **
-Matcreate (int r, int c) // The elements in the rows are next to each other.
-{
-  double** A = (double **) malloc (sizeof(double *) * r);
-  A[0] = (double *) malloc (sizeof(double) * c * r);
-  for (int i = 0; i < r; i++)
-    A[i] = (*A + c * i);
-  return A;
-}
-
-void
-Matfree (double** A)
-{
-  free (A[0]);
-  free (A);
-}
-
 int
 adm_chen (void
-(*f) (double*, double*, int, struct parameterDumper*),
-	  double* x_old, double tol, int maxIteration, int n,
-	  struct parameterDumper* p)
+(*f) (int, double* in, double* out),
+	  double* x_old, double tol, int maxIteration, int n,double lmd, int nn)
 /* It solves a function of type: void f (double* in, double* out, int n, struct parameterDumper* p) p is for some parameters you would like to pass
  * so that global variables can be avoided!
+ * It is wriitern based on CBE330 Note
  * x_old is the initial guess; tol is the tolerance; maxIteration is the max iteration number you allowed.
+ * lmd is the relaxzation factor larger lmd results in better stability. lmd<1.
+ * nn is the max size of matrix U
+ * n is the size of the vector problem
+ *
  * How to use it:
  * to solve myfun:
- *
- * double x[] = { 1, 2, 3 };
- *   struct parameterDumper p;
- *   p.double_a = 2.5;
- *   p.double_b = 3.6;
- *   int fail = adm_chen (&myfun, x, 1e-15, 3000, 3, &p);
- */
-
+void
+myfun (int n, double* in, double* out)
 {
-  // n is the size of the vector problem
+  out[0] = in[0] * in[1] * in[2] - 12.;
+  out[1] = in[1] * in[1] + in[0] * in[0] - 8.;
+  out[2] = in[1] + in[0] + in[2] - 511.;
+}
+int
+main ()
+{
+  double x[] =
+    { 1, 2, 3 };
+  int fail = adm_chen (&myfun, x, 1e-15, 3000, 3, 0.9,30);
+  return 0;
+}
+ */
+{
   int k = 0; // kth iteration
-  double lmd = 0.9; // relaxzation factor
   double lk = lmd;
   int m;
-  int nm = DMIN(30, n);
+  int nm = DMIN(nn, n);
   double** U = dmatrix (1, nm, 1, nm);
   double** V = dmatrix (1, nm, 1, 1);
   int k_restart = 0; // k_restart is used when U is ill.
   double err = 9.9e99; // err
-  double** X = Matcreate (maxIteration, maxIteration);
-  double** Y = Matcreate (maxIteration, maxIteration); /* X is used to store the guessed solution and
+  double** X = Matcreate (maxIteration, n);
+  double** Y = Matcreate (maxIteration, n); /* X is used to store the guessed solution and
    Y is the resulted rhs*/
   for (int i = 0; i < n; i++)
     X[0][i] = x_old[i];
 
   while (err > tol && k <= maxIteration)
     {
-      f (X[k], Y[k], n, p);
+      f (n, X[k], Y[k]);
       double err = 0.; // evaluate err
       for (unsigned int i = 0; i < n; i++)
 	{
 	  if (fabs (Y[k][i]) >= err)
 	    err = fabs (Y[k][i]);
 	}
-      printf ("And_chen: iter=%d; err=%2.15E\n", k, err);
+      printf ("And_chen: iter=%d; lk=%e, err=%2.15E\n", k,lk, err);
       if (err < tol)
 	{
 	  for (int i = 0; i < n; i++)
